@@ -30,16 +30,16 @@ while True:
         if response.status_code == 200:
             dados_brutos = response.json()
             
-            # TRATAMENTO COM PANDAS
+            
             df = pd.DataFrame(dados_brutos)
             df['Data'] = pd.to_datetime(df['timestamp'].astype(int), unit='s').dt.strftime('%Y-%m-%d')
             df = df[['Data', 'high', 'low', 'bid', 'pctChange']]
             df.columns = ['data', 'maximo', 'minimo', 'fechamento', 'variacao']
             
-            # CONEXÃO COM SQLITE
+            
             conn = inicializar_banco()
             
-            # INSERÇÃO NO SQL (Usando o comando 'OR IGNORE' para não repetir datas)
+            
             linhas_inseridas = 0
             for _, linha in df.iterrows():
                 try:
@@ -55,8 +55,7 @@ while True:
             conn.commit()
             print(f"Dados processados e enviados ao SQL.")
 
-            # EXPORTAÇÃO PARA EXCEL (Lendo direto do Banco de Dados)
-            # Isso prova que o dado foi salvo corretamente no SQL
+            
             df_sql = pd.read_sql_query("SELECT * FROM historico_cambio ORDER BY data DESC", conn)
             df_sql.to_excel("relatorio_acumulado.xlsx", index=False)
             print("Excel atualizado com base no histórico do Banco de Dados.")
@@ -69,5 +68,6 @@ while True:
     except Exception as e:
         print(f"Erro no pipeline: {e}")
 
-    print("Aguardando 60 segundos...")
+    print("Aguardando 1 minuto")
+
     time.sleep(60)
